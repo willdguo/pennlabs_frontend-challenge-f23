@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,233 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  min-width: 100%;
+  min-height: 100%;
+  /* overscroll-behavior: none;  */
+  /* why doesn't this do anything? */
 }
+
+.toolbar { /* WHY IS THIS TRANSPARENT WHEN I SCROLL LMAO */
+  background-color: #ccc;
+  width: calc(100vw - 40px);
+  height: 48px;
+  padding: 4px 20px 2px 25px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  width: 100vw;
+  margin-top: 48px;
+}
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  width: calc(25vw - 75px);
+  padding: 25px;
+  margin-right: 50px;
+  /* border-right: 1px solid #e0e0e0; */
+}
+
+.sidebar .search {
+  height: 30vh;
+  overflow-y: auto;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar .search .searchbar {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  /* border-bottom: 1px solid black; */
+}
+
+.sidebar .search .searchbar input {
+  background-color: transparent;
+  padding: 10px;
+  font-size: 16px;
+  width: calc(100% - 22px);
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+  outline: none;
+  color: black;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar .search .searchbar input:hover {
+  background-color: #ddd;
+}
+
+.sidebar .search .searchbar input:focus {
+  background-color: #ddd;
+}
+
+.sidebar .search .searchbar input::placeholder {
+  opacity: 50%;
+}
+
+.sidebar-cart-container {
+  height: calc(60vh - 98px);
+}
+
+.sidebar-cart {
+  height: 100%;
+  /* padding-bottom: 50px; */
+}
+
+.sidebar-cart .sidebar-cart-content {
+  height: 100%;
+  /* border: 1px solid pink; */
+}
+
+.sidebar-cart .sidebar-cart-content .sidebar-cart-course {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 0px;
+  /* background-color: blue; */
+}
+
+.sidebar-cart .sidebar-cart-content .sidebar-cart-course .sidebar-cart-course-title {
+  width: 90%;
+  overflow-x: auto;
+}
+
+.sidebar-cart .sidebar-cart-content .sidebar-cart-course .sidebar-cart-drag {
+  margin-left: 10px;
+  opacity: 20%;
+  font-size: 20px;
+}
+
+.sidebar-cart .sidebar-cart-content .sidebar-submit {
+  position: absolute;
+  bottom: 5px;
+  right: 25px;
+  width: calc(100% - 50px);
+}
+
+.sidebar-cart .sidebar-cart-content .sidebar-submit button {
+  width: 100%;
+  background-color: #0074e4;
+  color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid #e0e0e0;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-cart .sidebar-cart-content .sidebar-submit button:hover {
+  background-color: #0054c4;
+}
+
+.course-list-container {
+  width: calc(75vw - 190px);
+  margin-left: 50px;
+  padding: 20px;
+  margin-left: 25vw;
+  margin-right: 50px;
+  /* border-left: 1px solid #f5f5f5; */
+}
+
+.course-list-content {
+  display: flex; 
+  flex-direction: column;
+}
+
+.course-list-content .notification {
+  z-index: 1;
+  position: fixed;
+  background-color: #ffc7c7;
+  text-align: center;
+  top: 80px;
+  left: calc(50vw - 80px);
+  width: 140px;
+  opacity: 80%;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 10px;
+}
+
+.course-list-content .course-list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* ADAPT WIDTH BASED ON VIEWPORT!! */
+
+.course-list .course-item {
+  width: 40%;
+  padding: 10px 10px 50px 10px; /* lwowkey fix this wonky ahrdccoded */
+  margin: 20px 20px 20px 0px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  position: relative;
+}
+
+.course-list .course-item .course-desc {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.course-list .course-item .course-option {
+  width: calc(100% - 10px);
+  text-align: right;
+  align-items: right;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 3px;
+  position: absolute; 
+  bottom: 5px;
+  right: 10px;
+}
+
+.course-list .course-item .course-option button {
+  padding: 3px 10px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  background-color: #9FE59A;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.course-list .course-item .course-option.add button:hover {
+  background-color: #7FC57A;
+  color: white;
+}
+
+.course-list .course-item .course-option button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px #aaa;
+}
+
+.course-list .course-item .course-option.remove button {
+  background-color: #ee6767;
+  padding: 3px 13px 3px 13px;
+}
+
+.course-list .course-item .course-option.remove button:hover {
+  background-color: #b44;
+  color: white;
+}
+
+
+

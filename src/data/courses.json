@@ -2,7 +2,7 @@
   {
     "dept": "CIS",
     "number": 110,
-    "title": "Introduction to Computer Programming (with Java, for Beginners",
+    "title": "Introduction to Computer Programming (with Java, for Beginners)",
     "description": "Introduction to Computer Programming is the first course in our series introducing students to computer science. In this class you will learn the fundamentals of computer programming in Java, with emphasis on applications in science and engineering. You will also learn about the broader field of computer science and algorithmic thinking, the fundamental approach that computer scientists take to solving problems."
   },
   {
@@ -75,7 +75,7 @@
   {
     "dept": "CIS",
     "number": 194,
-    "title": "Haskell Programmin",
+    "title": "Haskell Programming",
     "description": "Haskell is a high-level, purely functional programming language with a strong static type system and elegant mathematical underpinnings. It is being increasingly used in industry by organizations such as Facebook, AT&T, and NASA, along with several financial firms. We will explore the joys of functional programming, using Haskell as a vehicle. The aim of the course will be to allow you to use Haskell to easily and conveniently write practical programs. All are welcome, including those with no programming experience. Evaluation will be based on regular homework assignments and class participation."
   },
   {

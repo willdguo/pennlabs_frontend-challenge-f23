@@ -1,62 +1,110 @@
-import './App.css';
-import { useEffect, useState } from 'react';
-import Nav from './components/Nav';
-import Courses from './components/Courses';
-import Cart from './components/Cart';
+import './App.css'
+import { useState } from 'react'
+import Nav from './components/Nav'
+import Courses from './components/Courses'
+import Cart from './components/Cart'
+import Checkout from './components/Checkout'
+import { Routes, Route, Navigate } from 'react-router-dom'
+
 
 interface Course {
   dept: string,
-  number: Number,
+  number: number,
   title: string,
-  description: string
+  description: string,
+  prereqs?: string[],
+  "cross-listed"?: string[]
 }
 
 function App() {
 
   const [cart, setCart] = useState<Course[]>([])
   const [search, setSearch] = useState("")
+  const [cartView, setCartView] = useState(false)
 
-  // const [numberFilter, setNumberFilter] = useState([false, false, false]) // FIX THIS
+  const [numberFilter, setNumberFilter] = useState([false, false, false]) // FIX THIS
 
-  return (
-    <div className = "container">
+  const flip_filter = (index: number) => {
+    if(index === 0){
+      setNumberFilter([!numberFilter[0], numberFilter[1], numberFilter[2]])
+    } else if (index === 1){
+      setNumberFilter([numberFilter[0], !numberFilter[1], numberFilter[2]])
+    } else {
+      setNumberFilter([numberFilter[0], numberFilter[1], !numberFilter[2]])
+    }
+  }
 
-      <div className = "toolbar">
-        <Nav />
-      </div>
-
-      <div className = "content">
-
+  const main = () => (
+    <div className = "content">
         <div className = "sidebar">
 
           <div className = "search">
             <div className = "searchbar">
-              <input value = {search} placeholder = "Search" onChange = {(e) => setSearch(e.target.value)}/>
+              <input value = {search} 
+                placeholder = "Search" 
+                onChange = {(e) => setSearch(e.target.value)}
+              />
             </div>
 
             <div className = "filter">
-              Course Level
-              <p> RA </p>
-              <p> RA </p>
-              <p> RASPUTIN </p>
-              <p> RUSSIA'S GREATEST LOVE MACHINE </p>
-              {/* <input type = "checkbox" value = {} onChange = {} /> Intro (100-199) */}
+              <h3> Course Level </h3>
+              <ul>
+                <li onClick = {() => flip_filter(0)}>
+                  <input 
+                    type = "checkbox" 
+                    checked = {numberFilter[0]}
+                    onChange = {() => flip_filter(0)}
+                  /> 
+                  Intro (100 - 199)
+                </li>
+                <li onClick = {() => flip_filter(1)}>
+                  <input  
+                    type = "checkbox" 
+                    checked = {numberFilter[1]} 
+                    onChange = {() => flip_filter(1)}
+                  /> 
+                  Regular (200-299)
+                </li>
+                <li onClick = {() => flip_filter(2)}>
+                  <input 
+                    type = "checkbox" 
+                    checked = {numberFilter[2]} 
+                    onChange = {() => flip_filter(2)}
+                  /> 
+                  Upper Level (300+)
+                </li>
+              </ul>
             </div>
           </div>
 
           <div className = "sidebar-cart-container">
-            <Cart cart = {cart}/>
+            <Cart cart = {cart} setCart = {setCart}/>
           </div>
 
         </div>
 
         <div className = "course-list-container">
-          <Courses cart = {cart} setCart = {setCart} search = {search}/>
+          <Courses cart = {cart} setCart = {setCart} search = {search} 
+            numberFilter = {numberFilter} cartView = {cartView} setCartView = {setCartView}/>
         </div>
-
-      </div>
     </div>
-  );
+  )
+
+  return (
+    <div className = "container">
+
+      <div className = "toolbar">
+        <Nav cart = {cart} setCartView={setCartView}/>
+      </div>
+
+      <Routes>
+        <Route path = "/" element = {main()} />
+        <Route path = "/checkout" element = {<Checkout cart = {cart} setCart = {setCart}/>} />
+        <Route path = "*" element = {<Navigate to = "/" />} />
+      </Routes>
+
+    </div>
+  )
 }
 
 export default App;

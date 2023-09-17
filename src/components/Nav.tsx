@@ -1,14 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import icon1 from "../icons/cart_icon.png"
 
-interface Course {
-  dept: string,
-  number: number,
-  title: string,
-  description: string,
-  prereqs?: string[],
-  "cross-listed"?: string[]
-}
 
 interface NavProps {
   cart: Array<{
@@ -16,19 +8,21 @@ interface NavProps {
     number: number,
     title: string,
     description: string,
-    prereqs?: string[],
+    prereqs?: string[] | string,
     "cross-listed"?: string[]
   }>;
-  setCartView: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const Nav = (props: NavProps) => {
 
   const navigate = useNavigate()
 
-  const handleViewCart = () => {
-    navigate('/')
-    props.setCartView(true)
+  // Converts cart to an appropriate URL query
+  // Returns string of cart course IDs ('[dept]-[number]') joined by ';'
+  const cartToQuery = () => {
+    const output = (props.cart.map(course => `${course.dept}-${course.number}`)).join(';')
+    console.log(output)
+    return output
   }
 
   return (
@@ -36,7 +30,8 @@ const Nav = (props: NavProps) => {
       <h2 onClick = {() => navigate('/')}>Penn Course Cart</h2>
 
       <div className = "cart">
-        <img src = {icon1} alt = "View Cart" onClick = {handleViewCart} />
+        <img src = {icon1} alt = "Checkout" title = "Checkout" 
+          onClick = {() => navigate(`/checkout?cart=${cartToQuery()}`)} />
         {props.cart.length > 0 ? props.cart.length : null}
       </div>
 

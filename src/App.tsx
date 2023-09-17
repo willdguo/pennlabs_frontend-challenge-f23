@@ -12,7 +12,7 @@ interface Course {
   number: number,
   title: string,
   description: string,
-  prereqs?: string[],
+  prereqs?: string[] | string,
   "cross-listed"?: string[]
 }
 
@@ -34,6 +34,7 @@ function App() {
     }
   }
 
+  // Main content of Penn Course Cart; conditionally rendered depending on route
   const main = () => (
     <div className = "content">
         <div className = "sidebar">
@@ -94,7 +95,7 @@ function App() {
     <div className = "container">
 
       <div className = "toolbar">
-        <Nav cart = {cart} setCartView={setCartView}/>
+        <Nav cart = {cart} />
       </div>
 
       <Routes>

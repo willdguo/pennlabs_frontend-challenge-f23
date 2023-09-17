@@ -1,3 +1,21 @@
+# Penn Course Cart - Summary
+Penn Course Cart is an interface where users can explore CIS department courses. It uses data provided in the data.json as well course rating data pulled from the Penn Course Plan 2022 Spring semester.
+
+## Features
+
+**Viewport compatibility:** The webpage is compatible with different screen sizes, though the below descriptions are written for a laptop view.  
+
+**Course View:** Users can view a large feed of available CIS courses. Each course tile includes the course title, prereqs (if any), cross listings (if any), description, along with student ratings of the course's quality, difficulty, and work required. For the sake of space, each tile has the description capped at 150px in height with the capability to scroll for more info. 
+
+**Cart View:** Users can see their cart on the sidebar on the left of the screen. On the sidebar, the user will be informed when their cart is empty. When their cart isn't empty, they are capable of re-ordering/deleting courses from their sidebar. 
+
+**Course Filtering:** The sidebar also gives users the option to search for and filter courses in their view. Courses are split into 3 course levels and can be searched for based on their title, description, or department.
+
+**Cart Selection:** Each course tile has a button for users to add/delete the course from their cart. Users can also do this on the sidebar where the cart view is. 
+
+**Checkout:** Users can access checkout by either redirecting to '/checkout', clicking the cart icon in the top right, or clicking the checkout button on the sidebar available when users have at least 1 item in their cart. During checkout, users can reorder the courses in their cart and Confirm their checkout. 
+
+
 # Frontend Challenge Fall '22
 
 Welcome to the Penn Labs Frontend Challenge!

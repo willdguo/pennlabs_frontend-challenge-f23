@@ -8,7 +8,7 @@ interface Course {
   number: number,
   title: string,
   description: string,
-  prereqs?: string[],
+  prereqs?: string[] | string,
   "cross-listed"?: string[]
 }
 
@@ -18,7 +18,7 @@ interface CartProps {
     number: number,
     title: string,
     description: string,
-    prereqs?: string[],
+    prereqs?: string[] | string,
     "cross-listed"?: string[]
   }>;
   setCart: React.Dispatch<React.SetStateAction<
@@ -33,12 +33,19 @@ const Cart = (props: CartProps) => {
   
   const navigate = useNavigate()
   
+  // Initiates dragging & reordering process
+  // Parameters: onDragStart event + course item id --> stores the currently dragged item's id 
   const handleDragStart = (event: React.DragEvent<HTMLLIElement>, id: string) => {
     setDraggedItem(id)
     console.log(id)
   }
 
-  
+  /* Reorders list items as they are dragged over.
+     event: onDragOver (for <li>)
+     draggedItemIndex: index in [carts] of the dragged item's id
+     targetItem = <li> that the mouse is (closest to) hovering over
+     courseListElement = bounding <ul> to help users scroll within the <ul> while dragging
+  */
   const handleDragOver = (event: React.DragEvent<HTMLLIElement>) => {
 
     event.preventDefault()
@@ -89,8 +96,16 @@ const Cart = (props: CartProps) => {
     event.preventDefault()
   }
 
+  // Converts cart to an appropriate URL query
+  // Returns string of cart course IDs ('[dept]-[number]') joined by ';'
+  const cartToQuery = () => {
+    const output = (props.cart.map(course => `${course.dept}-${course.number}`)).join(';')
+    console.log(output)
+    return output
+  }
+
   const handleCheckout = () => {
-    navigate('/checkout')
+    navigate(`/checkout?cart=${cartToQuery()}`)
   }
 
   const remove_from_cart = (dept: string, number: number) => {

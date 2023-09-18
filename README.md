@@ -1,6 +1,8 @@
 # Project Summary
 Penn Course Cart is an interface where users can explore all CIS department courses. It uses data from the Penn Course Plan 2022 Spring semester merged with the data from data.json.
 
+<img width="1502" alt="Screenshot 2023-09-17 at 11 43 54 PM" src="https://github.com/willdguo/pennlabs_frontend-challenge-f23/assets/64669373/582c6668-684d-4d17-8151-4080782af4e2">
+
 ## Features
 
 **Viewport compatibility:** The webpage is compatible with different screen sizes, though the below descriptions are written for a laptop view.  
@@ -19,6 +21,7 @@ There are some courses without much data readily available (e.g. CIS 660, CIS 79
 
 **Checkout:** Users can access checkout by either redirecting to '/checkout', clicking the cart icon in the top right, or clicking the checkout button on the sidebar available when users have at least 1 item in their cart. During checkout, users can reorder the courses in their cart. Users with at least 1 course that isn't available in the Spring 2022 semester are prompted with a confirmation alert; otherwise, users can confirm their checkout.
 
+<img width="1504" alt="Screenshot 2023-09-17 at 11 44 41 PM" src="https://github.com/willdguo/pennlabs_frontend-challenge-f23/assets/64669373/7ef54b2b-0272-4039-a54c-d7e658045cf5">
 
 
 

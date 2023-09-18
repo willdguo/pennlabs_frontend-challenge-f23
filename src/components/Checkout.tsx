@@ -75,10 +75,10 @@ const Checkout = (props: CheckoutProps) => {
       let output = true
       cartList.forEach(course => {
         if(course.unavailable){ // no course quality report = course unavailable
-          return false
+          output = false
         }
       })
-      return true
+      return output
     }
     
     const handleConfirm = () => {

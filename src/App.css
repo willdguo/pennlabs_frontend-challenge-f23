@@ -433,6 +433,7 @@
 .course-item .course-desc {
   max-height: 150px;
   overflow-y: auto;
+  opacity: 0.7;
 }
 
 .course-options {

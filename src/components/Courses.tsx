@@ -94,7 +94,7 @@ const Courses = (props: CartProps) => {
               : c
           )
           currList = temp
-        } else { // Otherwise, add it to the list raw + mark it as "unavailable"
+        } else { // If the course is in the JSON but not in Spring 2022 search, it must be "unavailable"
           currList = currList.concat({...course, id: `${course.dept}-${course.number}`, unavailable: true})
         }
       })

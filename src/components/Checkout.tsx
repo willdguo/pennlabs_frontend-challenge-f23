@@ -11,7 +11,8 @@ interface Course {
     "cross-listed"?: string[],
     "course_quality"?: number,
     "difficulty"?: number,
-    "work_required"?: number
+    "work_required"?: number,
+    unavailable?: boolean
 }
   
 interface CheckoutProps {
@@ -23,7 +24,8 @@ interface CheckoutProps {
       "cross-listed"?: string[],
       "course_quality"?: number,
       "difficulty"?: number,
-      "work_required"?: number
+      "work_required"?: number,
+      unavailable?: boolean
     }>;
     setCart: React.Dispatch<React.SetStateAction<
       Array<Course>
@@ -72,11 +74,11 @@ const Checkout = (props: CheckoutProps) => {
     const checkCartValidity = () => {
       let output = true
       cartList.forEach(course => {
-        if(!course.course_quality){ // no course quality report = course unavailable
-          output = false
+        if(course.unavailable){ // no course quality report = course unavailable
+          return false
         }
       })
-      return output
+      return true
     }
     
     const handleConfirm = () => {
@@ -290,11 +292,15 @@ const Checkout = (props: CheckoutProps) => {
                         ? <span> Loading... </span> 
                         : 
                         <>
+                          {course.unavailable
+                            ? <span className = "unavailable"> Not available this semester </span>
+                            : null
+                          }
                           {course.course_quality 
                             ? <span className = {`${getColor(course.course_quality, true)}`}> 
                                 Course Quality: {course.course_quality}
                               </span> 
-                            : <span className = "unavailable"> Not offered S2022 </span>
+                            : null
                           }
                           {course.difficulty 
                             ? <span className = {`${getColor(course.difficulty, false)}`}> 

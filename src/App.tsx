@@ -15,7 +15,8 @@ interface Course {
   "cross-listed"?: string[],
   "course_quality"?: number,
   "difficulty"?: number,
-  "work_required"?: number
+  "work_required"?: number,
+  unavailable?: boolean,
 }
 
 function App() {

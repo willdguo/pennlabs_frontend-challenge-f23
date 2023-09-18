@@ -11,6 +11,7 @@ interface Course {
   "course_quality"?: number,
   "difficulty"?: number,
   "work_required"?: number,
+  unavailable?: boolean,
 }
 
 interface CourseJSON {
@@ -31,7 +32,8 @@ interface CartProps {
     "cross-listed"?: string[],
     "course_quality"?: number,
     "difficulty"?: number,
-    "work_required"?: number
+    "work_required"?: number,
+    unavailable?: boolean
   }>;
   setCart: React.Dispatch<React.SetStateAction<
     Array<Course>
@@ -68,9 +70,37 @@ const Courses = (props: CartProps) => {
     Upon first render:  
     - Set view to Normal upon reloading the Course View (e.g. after returning from Checkout)
     - Load all course quality/difficulty/work required (takes a bit on penn slowass wifi - to-do: reduce time)
+    - Merges API data with JSON data
     Dependencies: none --> triggers only 1ce
   */
   useEffect(() => {
+    // Checks if CourseJSON element is in the standardized courseList
+    const in_courseList = (course: CourseJSON, currList: Course[]) => {
+      const temp = currList.filter(cart_course => 
+        cart_course.id === `${course.dept}-${course.number}`
+      )
+      return temp.length === 1
+    }
+
+    // Merges API data with JSON data
+    // Parameters: currList (API data) --> returns API data with prereqs, cross-listing, + unlisted courses from the JSON
+    const mergeJsonData = (currList: Course[]) => {
+      jsonData.forEach((course: CourseJSON) => {
+        if(in_courseList(course, currList)){ // If already in courseList, add prereqs + crossref
+          const temp = currList.map(c => 
+              `${course.dept}-${course.number}` === c.id 
+              ? {...c, prereqs: course.prereqs, 'cross-listed': course['cross-listed']}
+              : c
+          )
+          currList = temp
+        } else { // Otherwise, add it to the list raw + mark it as "unavailable"
+          currList = currList.concat({...course, id: `${course.dept}-${course.number}`, unavailable: true})
+        }
+      })
+
+      return currList
+    }
+
     props.setCartView(false)
 
     courseService.getAll()
@@ -78,6 +108,7 @@ const Courses = (props: CartProps) => {
         let temp = result.filter((course: Course) => course.title)
         console.log("Loading complete!")
         console.log(temp)
+        temp = mergeJsonData(temp)
         temp = sortCourses(temp, 0)
         setCourseList(temp)
         setLoading(false)
@@ -115,7 +146,6 @@ const Courses = (props: CartProps) => {
     }
     setFiltered_courses(numFilteredCourses)
   }, [courseList, props.search, props.numberFilter, props.cartView])
-
 
   // Retrieve course number from course
   // Return: course number : number
@@ -266,6 +296,10 @@ const Courses = (props: CartProps) => {
             { in_cart(course.id)
             ? 
               <div className = "course-options remove">
+                {course.unavailable
+                  ? <span className = "unavailable"> Not available this semester </span>
+                  : null
+                }
                 {course.course_quality 
                   ? <span className = {`${getColor(course.course_quality, true)}`}> 
                       Course Quality: {course.course_quality}
@@ -290,6 +324,10 @@ const Courses = (props: CartProps) => {
               </div> 
             : 
               <div className = "course-options add">
+                {course.unavailable
+                  ? <span className = "unavailable"> Not available this semester </span>
+                  : null
+                }
                 {course.course_quality 
                   ? <span className = {`${getColor(course.course_quality, true)}`}> 
                       Course Quality: {course.course_quality}

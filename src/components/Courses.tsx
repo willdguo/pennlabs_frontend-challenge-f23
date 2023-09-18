@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import courses from '../data/courses.json'
+import jsonData from '../data/courses.json'
 import courseService from '../services/getCourse'
 
 interface Course {
-  dept: string,
-  number: number,
+  id: string,
   title: string,
   description: string,
   prereqs?: string[] | string,
@@ -14,14 +13,25 @@ interface Course {
   "work_required"?: number,
 }
 
+interface CourseJSON {
+  dept: string,
+  number: number,
+  title: string,
+  description: string,
+  prereqs?: string[] | string,
+  "cross-listed"?: string[]
+}
+
 interface CartProps {
   cart: Array< {
-    dept: string,
-    number: number,
+    id: string,
     title: string,
     description: string,
     prereqs?: string[] | string,
-    "cross-listed"?: string[]
+    "cross-listed"?: string[],
+    "course_quality"?: number,
+    "difficulty"?: number,
+    "work_required"?: number
   }>;
   setCart: React.Dispatch<React.SetStateAction<
     Array<Course>
@@ -48,29 +58,32 @@ const Courses = (props: CartProps) => {
     }
   */
 
-  const [courseList, setCourseList] = useState<Course[]>([...courses])
+  const [courseList, setCourseList] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [filtered_courses, setFiltered_courses] = useState<Course[]>([...courses])
+  const [filtered_courses, setFiltered_courses] = useState<Course[]>([])
   const [notification, setNotification] = useState("")
 
   /*
-    Upon rendering:  
+    Upon first render:  
     - Set view to Normal upon reloading the Course View (e.g. after returning from Checkout)
-    - Load all course quality/difficulty/work required (takes a bit - to-do: reduce time)
+    - Load all course quality/difficulty/work required (takes a bit on penn slowass wifi - to-do: reduce time)
     Dependencies: none --> triggers only 1ce
   */
   useEffect(() => {
     props.setCartView(false)
 
-    courseService.getAll(courses)
+    courseService.getAll()
       .then(result => {
-        console.log(result)
-        setCourseList(result)
-        setLoading(false) // Courses not found in database will no longer be "Loading"
+        let temp = result.filter((course: Course) => course.title)
+        console.log("Loading complete!")
+        console.log(temp)
+        temp = sortCourses(temp, 0)
+        setCourseList(temp)
+        setLoading(false)
       })
-  }, [])
 
+  }, [])
 
   // Filters visible courses on changing
   // Dependencies: search, numberFilter --> rerender courses to match relevant requirements
@@ -83,11 +96,11 @@ const Courses = (props: CartProps) => {
       cartFilteredCourses = courseList
     }
 
-    // next, filter by search parameters - title, description, & department
+    // next, filter by search parameters - title, description, & id
     const searchFilteredCourses = cartFilteredCourses.filter(course => 
       course.title.includes(props.search) 
       || course.description.includes(props.search)
-      || course.dept.includes(props.search)
+      || course.id.includes(props.search)
     )
 
     // finally, filter based on number/course level 
@@ -95,25 +108,57 @@ const Courses = (props: CartProps) => {
 
     if(props.numberFilter[0] || props.numberFilter[1] || props.numberFilter[2]){
       numFilteredCourses = searchFilteredCourses.filter(course => 
-        (props.numberFilter[0] && course.number < 200)
-        || (props.numberFilter[1] && (course.number < 300 && 200 <= course.number))
-        || (props.numberFilter[2] && 300 <= course.number)
+        (props.numberFilter[0] && getNumber(course) < 200)
+        || (props.numberFilter[1] && (getNumber(course) < 300 && 200 <= getNumber(course)))
+        || (props.numberFilter[2] && 300 <= getNumber(course))
       )
     }
     setFiltered_courses(numFilteredCourses)
   }, [courseList, props.search, props.numberFilter, props.cartView])
 
-  const in_cart = (dept: string, number: Number) => {
 
+  // Retrieve course number from course
+  // Return: course number : number
+  const getNumber = (course: Course) => {
+    const temp = course.id.split('-')
+    return Number(temp[1])
+  }
+
+  // Sorts courses based on desired parameter (0 = course, 1 = quality, 2 = difficulty, 3 = work)
+  const sortCourses = (courses: Course[], sortVal: number) => {
+    const sortedCourses = courses.sort((c1, c2) => {
+      if(sortVal === 0){
+        const num1 = getNumber(c1)
+        const num2 = getNumber(c2)
+        return num1 - num2
+      } else if(sortVal === 1){
+        const num1 = c1.course_quality || 5
+        const num2 = c2.course_quality || 5
+        return num1 - num2
+      } else if (sortVal === 2){
+         const num1 = c1.difficulty || 5
+         const num2 = c2.difficulty || 5
+         return num1 - num2
+      } else {
+        const num1 = c1.work_required || 5
+        const num2 = c2.work_required || 5
+        return num1 - num2
+      }
+    })
+    return sortedCourses
+  }
+
+  // Check if course is in cart
+  // Don't overuse - inefficient runtime
+  const in_cart = (id: string) => {
     const temp = props.cart.filter(cart_course => 
-        cart_course.dept === dept && cart_course.number === number
+        cart_course.id === id
       )
     return temp.length === 1
   }
 
   const add_to_cart = (course: 
-    { dept: string, 
-      number: number, 
+    { id: string, 
       title: string, 
       description: string,
       prereqs?: string[] | string
@@ -127,9 +172,9 @@ const Courses = (props: CartProps) => {
     }
   }
 
-  const remove_from_cart = (dept: string, number: Number) => {
+  const remove_from_cart = (id: string) => {
     const temp = props.cart.filter(cart_course => 
-      cart_course.number !== number || cart_course.dept !== dept
+      cart_course.id !== id
     )
 
     props.setCart(temp)
@@ -186,13 +231,17 @@ const Courses = (props: CartProps) => {
       </div>
 
       <div className = "course-list">
+        {loading
+        ? <p> Loading...</p>
+        : null
+        }
 
-        { filtered_courses.length === 0 && props.cartView
+        { filtered_courses.length === 0 && props.cartView && !loading
         ? <p> Your have no courses selected. Select a few courses to see your cart! </p>
         : filtered_courses.map(course => (
 
-          <div className = "course-item" key={`${course.dept}-${course.number}`}>
-            <h3> {`${course.dept} ${course.number}: ${course.title}`} </h3>
+          <div className = "course-item" key={course.id}>
+            <h3> {course.id}: {course.title} </h3>
 
             <span className = "course-log"> 
                 {course.prereqs 
@@ -214,65 +263,51 @@ const Courses = (props: CartProps) => {
             </div>
 
             {/* Depending on whether course is in/out of cart, button will change */}
-            { in_cart(course.dept, course.number)
+            { in_cart(course.id)
             ? 
               <div className = "course-options remove">
-                {loading 
-                  ? <span> Loading... </span> 
-                  : 
-                  <>
-                    {course.course_quality 
-                      ? <span className = {`${getColor(course.course_quality, true)}`}> 
-                          Course Quality: {course.course_quality}
-                        </span> 
-                      : null
-                    }
-                    {course.difficulty 
-                      ? <span className = {`${getColor(course.difficulty, false)}`}> 
-                          Difficulty: {course.difficulty}
-                        </span> 
-                      : null
-                    }
-                    {course.work_required
-                      ? <span className = {`${getColor(course.work_required, false)}`}> 
-                          Work Required: {course.work_required}
-                        </span> 
-                      : null
-                    }
-                  </>
+                {course.course_quality 
+                  ? <span className = {`${getColor(course.course_quality, true)}`}> 
+                      Course Quality: {course.course_quality}
+                    </span> 
+                  : null
                 }
-                
-                <button title = "Remove Course" onClick = {() => remove_from_cart(course.dept, course.number)}> 
+                {course.difficulty 
+                  ? <span className = {`${getColor(course.difficulty, false)}`}> 
+                      Difficulty: {course.difficulty}
+                    </span> 
+                  : null
+                }
+                {course.work_required
+                  ? <span className = {`${getColor(course.work_required, false)}`}> 
+                      Work Required: {course.work_required}
+                    </span> 
+                  : null
+                }               
+                <button title = "Remove Course" onClick = {() => remove_from_cart(course.id)}> 
                   -
                 </button>
               </div> 
             : 
               <div className = "course-options add">
-                {loading 
-                  ? <span> Loading... </span> 
-                  : 
-                  <>
-                    {course.course_quality 
-                      ? <span className = {`${getColor(course.course_quality, true)}`}> 
-                          Course Quality: {course.course_quality}
-                        </span> 
-                      : null
-                    }
-                    {course.difficulty 
-                      ? <span className = {`${getColor(course.difficulty, false)}`}> 
-                          Difficulty: {course.difficulty}
-                        </span> 
-                      : null
-                    }
-                    {course.work_required
-                      ? <span className = {`${getColor(course.work_required, false)}`}> 
-                          Work Required: {course.work_required}
-                        </span> 
-                      : null
-                    }
-                  </>
+                {course.course_quality 
+                  ? <span className = {`${getColor(course.course_quality, true)}`}> 
+                      Course Quality: {course.course_quality}
+                    </span> 
+                  : null
                 }
-
+                {course.difficulty 
+                  ? <span className = {`${getColor(course.difficulty, false)}`}> 
+                      Difficulty: {course.difficulty}
+                    </span> 
+                  : null
+                }
+                {course.work_required
+                  ? <span className = {`${getColor(course.work_required, false)}`}> 
+                      Work Required: {course.work_required}
+                    </span> 
+                  : null
+                }
                 <button title = "Add Course" onClick = {() => add_to_cart(course)}> 
                   +
                 </button>

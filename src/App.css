@@ -426,6 +426,11 @@
   background-color: #ebb;
 }
 
+.course-options .unavailable {
+  background-color: black;
+  color: white;
+}
+
 .course-options button {
   position: absolute;
   right: 10px;
@@ -490,6 +495,30 @@
   text-decoration: underline;
 }
 
+.checkout .avg {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.checkout .avg span{
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin: 5px 3px; 
+  background-color: #bbe;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.checkout .avg .high {
+  background-color: #beb;
+}
+
+.checkout .avg .low {
+  background-color: #ebb;
+}
+
 .checkout ul {
   height: 50vh;
   overflow-y: auto;
@@ -538,6 +567,11 @@
   background-color: #ebb;
 }
 
+.checkout-course .checkout-course-data .unavailable {
+  background-color: black;
+  color: white;
+}
+
 .checkout .checkout-course:hover {
   cursor: grab;
 }
@@ -559,16 +593,26 @@
 }
 
 .checkout .notification {
+  display: flex;
   position: fixed;
   text-align: center;
+  align-items: center;
+  justify-content: center;
   top: 50px;
   padding: 10px 0px;
   left: calc(50vw - 150px);
   width: 300px;
   margin-top: 10px;
   font-size: 20px;
+  background-color: #9FE59A;
+  color: black;
   border: 1px solid green;
   border-radius: 10px;
+}
+
+.checkout .notification img {
+  width: 30px;
+  padding-right: 5px;
 }
 
 

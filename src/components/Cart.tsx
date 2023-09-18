@@ -4,22 +4,26 @@ import icon1 from "../icons/updown_icon.png"
 import icon2 from "../icons/trashcan.png"
 
 interface Course {
-  dept: string,
-  number: number,
+  id: string,
   title: string,
   description: string,
   prereqs?: string[] | string,
-  "cross-listed"?: string[]
+  "cross-listed"?: string[],
+  "course_quality"?: number,
+  "difficulty"?: number,
+  "work_required"?: number
 }
 
 interface CartProps {
   cart: Array<{
-    dept: string,
-    number: number,
+    id: string,
     title: string,
     description: string,
     prereqs?: string[] | string,
-    "cross-listed"?: string[]
+    "cross-listed"?: string[],
+    "course_quality"?: number,
+    "difficulty"?: number,
+    "work_required"?: number
   }>;
   setCart: React.Dispatch<React.SetStateAction<
     Array<Course>
@@ -63,7 +67,7 @@ const Cart = (props: CartProps) => {
       }
     
       const draggedItemIndex = props.cart.findIndex(course => 
-        `${course.dept}-${course.number}` === draggedItem
+        course.id === draggedItem
       )
       
       const targetItem = (event.target as HTMLElement)?.closest("li")
@@ -71,7 +75,7 @@ const Cart = (props: CartProps) => {
       if(targetItem){
         const targetItemId = targetItem.getAttribute("data-course-id")
         const targetItemIndex = props.cart.findIndex(course => 
-          `${course.dept}-${course.number}` === targetItemId
+          course.id === targetItemId
         )
         
         const targetRect = targetItem.getBoundingClientRect()
@@ -99,7 +103,7 @@ const Cart = (props: CartProps) => {
   // Converts cart to an appropriate URL query
   // Returns string of cart course IDs ('[dept]-[number]') joined by ';'
   const cartToQuery = () => {
-    const output = (props.cart.map(course => `${course.dept}-${course.number}`)).join(';')
+    const output = (props.cart.map(course => course.id)).join('+')
     console.log(output)
     return output
   }
@@ -108,10 +112,10 @@ const Cart = (props: CartProps) => {
     navigate(`/checkout?cart=${cartToQuery()}`)
   }
 
-  const remove_from_cart = (dept: string, number: number) => {
+  const remove_from_cart = (id: string) => {
 
     const temp = props.cart.filter(cart_course => 
-      cart_course.number !== number || cart_course.dept !== dept
+      cart_course.id !== id
     )
 
     props.setCart(temp)
@@ -133,23 +137,23 @@ const Cart = (props: CartProps) => {
         : 
           <div className = "sidebar-cart-content">
             <ul ref = {courseListRef}>
-              {props.cart.map(({ dept, number, title}) => (
+              {props.cart.map(({ id, title}) => (
 
-                <li className = "sidebar-cart-course" key={`${dept}-${number}`}
-                  data-course-id = {`${dept}-${number}`}
+                <li className = "sidebar-cart-course" key={id}
+                  data-course-id = {id}
                   draggable = "true"
-                  onDragStart = {(e) => handleDragStart(e, `${dept}-${number}`)}
+                  onDragStart = {(e) => handleDragStart(e, id)}
                   onDragOver = {(e) => handleDragOver(e)}
                   onDrop = {(e) => handleDrop(e)}
                 >
                   <div className = "sidebar-cart-course-title">
-                    <strong> {`${dept} ${number}:`} </strong> {`${title}`}
+                    <strong> {id}: </strong> {`${title}`}
                   </div>
 
                   <div className = "sidebar-cart-options">
                       <img draggable = "false" src = {icon1} alt = "Move item up and down" />
                       <img className = "delete" draggable = "false" src = {icon2} 
-                        alt = "Delete Item" onClick = {() => remove_from_cart(dept, number)}
+                        alt = "Delete Item" onClick = {() => remove_from_cart(id)}
                       />
                   </div>
                 </li>

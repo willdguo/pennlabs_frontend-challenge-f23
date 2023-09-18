@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import courseService from '../services/getCourse'
+import icon1 from '../icons/checkmark.png'
 
 interface Course {
-    dept: string,
-    number: number,
+    id: string,
     title: string,
     description: string,
     prereqs?: string[] | string,
@@ -16,8 +16,7 @@ interface Course {
   
 interface CheckoutProps {
     cart: Array<{
-      dept: string,
-      number: number,
+      id: string,
       title: string,
       description: string,
       prereqs?: string[] | string
@@ -44,36 +43,63 @@ const Checkout = (props: CheckoutProps) => {
     const [draggedItem, setDraggedItem] = useState("")
     const courseListRef = useRef<HTMLUListElement | null>(null)
 
-    // Upon first render, a) gets cart courses from URL, b) gets course quality/API data
+    // Upon first render, a) gets cart courses from URL, b) gets course quality/etc. API data
     useEffect(() => {
         // If cart is empty, will redirect to '/'
         // To be expanded: component uses cart array from input parameter CheckoutProps
         const queryParams = (new URLSearchParams(location.search)).get('cart')
 
-        const queryCart = queryParams ? queryParams.split(';') : []
+        const queryCart = queryParams ? queryParams.split('+') : []
 
         // checks if cart is empty & adjusts accordingly
         if(queryCart.length > 0 && props.cart.length === 0) {
           navigate('/checkout?cart=')
         }
 
-        console.log(queryCart)
+        // console.log(queryCart)
 
         // Retrieves all data for courses in props.cart
-        courseService.getAll(props.cart)
+      courseService.getListData(props.cart)
         .then(result => {
           console.log(result)
           setCartList(result)
           setLoading(false) // Cart courses not found in database will no longer be "Loading"
         })
-    }, [])
+      }, [])
 
+
+    // Checks if all courses in cart are available in the target semester
+    const checkCartValidity = () => {
+      let output = true
+      cartList.forEach(course => {
+        if(!course.course_quality){ // no course quality report = course unavailable
+          output = false
+        }
+      })
+      return output
+    }
     
     const handleConfirm = () => {
+
+      if(checkCartValidity()){
         setNotif("Course Selection Confirmed!")
         setTimeout(() => {
             setNotif("")
         }, 3500)
+      } else {
+        const response = window.confirm("One or more of the courses in your cart is unavailable "
+        + "this semester. Are you sure you'd like to proceed?")
+
+        if(response){
+          setTimeout(() => {
+            setNotif("Course Selection Confirmed!")
+          }, 500)
+          setTimeout(() => {
+              setNotif("")
+          }, 3500)
+        }
+      }
+
     }
 
     // Initiates dragging & reordering process
@@ -106,7 +132,7 @@ const Checkout = (props: CheckoutProps) => {
           }
         
           const draggedItemIndex = props.cart.findIndex(course => 
-            `${course.dept}-${course.number}` === draggedItem
+            course.id === draggedItem
           )
           
           const targetItem = (event.target as HTMLElement)?.closest("li")
@@ -114,7 +140,7 @@ const Checkout = (props: CheckoutProps) => {
           if(targetItem){
             const targetItemId = targetItem.getAttribute("data-course-id")
             const targetItemIndex = props.cart.findIndex(course => 
-              `${course.dept}-${course.number}` === targetItemId
+              course.id === targetItemId
             )
             
             const targetRect = targetItem.getBoundingClientRect()
@@ -129,6 +155,7 @@ const Checkout = (props: CheckoutProps) => {
               let updatedCart = [...props.cart]
               const [draggedItem] = updatedCart.splice(draggedItemIndex, 1)
               updatedCart.splice(targetItemIndex, 0, draggedItem)
+              setCartList(updatedCart)
               props.setCart(updatedCart)
             }
           }
@@ -144,7 +171,10 @@ const Checkout = (props: CheckoutProps) => {
     const getColor = (val: number, highGood: boolean) => {
       const temp = ["low", "mid", "high"]
 
-      if(val < 2.2){
+      if (val === 0) {
+        return ""
+      }
+      else if(val < 2.2){
         return highGood ? temp[0] : temp[2]
       } else if (val < 3.3) {
         return temp[1]
@@ -153,6 +183,59 @@ const Checkout = (props: CheckoutProps) => {
       }
     }
 
+    // Returns cart average for 0 = Course Quality, 1 = Difficulty, 2 = Work Required
+    const getAverage = (index: number) => {
+      if(index === 0){
+        let total = 0
+        let count = 0
+        cartList.forEach(course => {
+          if(course.course_quality){
+            total += Number(course.course_quality)
+            count += 1
+          }
+        })
+
+        if(count === 0){
+          return 0
+        } else {
+          return Number((total/count).toFixed(2))
+        }
+      } else if(index === 1){
+        let total = 0
+        let count = 0
+        cartList.forEach(course => {
+          if(course.difficulty){
+            total += Number(course.difficulty)
+            count += 1
+          }
+        })
+
+        if(count === 0){
+          return 0
+        } else {
+          return Number((total/count).toFixed(2))
+        }
+      } else {
+        let total = 0
+        let count = 0
+        cartList.forEach(course => {
+          if(course.work_required){
+            total += Number(course.work_required)
+            count += 1
+          }
+        })
+
+        if(count === 0){
+          return 0
+        } else {
+          return Number((total/count).toFixed(2))
+        }
+      }
+      
+    }
+
+   // Renders differently depending on whether cart is empty
+   // If cart is empty, will return <p> telling user their cart is empty
    if(props.cart.length === 0){
 
     return (
@@ -171,7 +254,8 @@ const Checkout = (props: CheckoutProps) => {
             ? null
             : 
                 <div className = "notification">
-                    {notif}
+                    <img src = {icon1} alt = "Confirmed!" />
+                    <span> {notif} </span>
                 </div>
             }
 
@@ -179,20 +263,26 @@ const Checkout = (props: CheckoutProps) => {
 
             <button className = "exit" onClick = {() => navigate('/')}> Back to courses </button>
 
+            <div className = "avg">
+              <span className = {`${getColor(getAverage(0), true)}`}> Average Course Quality: {getAverage(0)} </span>
+              <span className = {`${getColor(getAverage(1), false)}`}> Average Difficulty: {getAverage(1)} </span>
+              <span className = {`${getColor(getAverage(2), false)}`}> Average Work Required: {getAverage(2)} </span>
+            </div>
+
             <h2> Order Courses by Preference </h2>
             <ul ref = {courseListRef}>
                 {cartList.map((course, index) => (
 
-                <li className = "checkout-course" key = {`${course.dept}-${course.number}`}
-                    data-course-id = {`${course.dept}-${course.number}`}
+                <li className = "checkout-course" key = {course.id}
+                    data-course-id = {course.id}
                     draggable = "true"
-                    onDragStart={(e) => handleDragStart(e, `${course.dept}-${course.number}`)}
+                    onDragStart={(e) => handleDragStart(e, course.id)}
                     onDragOver={handleDragOver}
                     onDrop={handleDrop}
                 >
                   
                     <h3> 
-                      {`${index + 1}. ${course.dept} ${course.number}: ${course.title}`}
+                      {index + 1}. {course.id}: {course.title}
                     </h3>
                     
                     <div className = "checkout-course-data">
@@ -204,7 +294,7 @@ const Checkout = (props: CheckoutProps) => {
                             ? <span className = {`${getColor(course.course_quality, true)}`}> 
                                 Course Quality: {course.course_quality}
                               </span> 
-                            : null
+                            : <span className = "unavailable"> Not offered S2022 </span>
                           }
                           {course.difficulty 
                             ? <span className = {`${getColor(course.difficulty, false)}`}> 

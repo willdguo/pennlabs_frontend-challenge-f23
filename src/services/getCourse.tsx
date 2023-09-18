@@ -1,8 +1,7 @@
 import axios from "axios";
 
 interface Course {
-    dept: string,
-    number: number,
+    id: string,
     title: string,
     description: string,
     prereqs?: string[] | string,
@@ -12,12 +11,13 @@ interface Course {
     "work_required"?: number,
 }
 
+// Currently accessing the Spring 2022 course list
 // Change in future should semester/course reporting change
-const baseUrl = '/api/base/2022A/courses'
+const baseUrl = '/api/base/2022A'
 
 // Conditionally returns iff course still exists
 const getCourseData = async (id: string) => {
-    const response = await axios.get(`${baseUrl}/${id}/`)
+    const response = await axios.get(`${baseUrl}/courses/${id}/`)
         .catch(error => {
             console.log(`${id} not found`)
             return
@@ -30,14 +30,14 @@ const getCourseData = async (id: string) => {
 
 // Retrieves the course quality, work, & difficulty of all courses
 // Returns Course[]
-const getAll = async (courses: Course[]) => {
+const getListData = async (courses: Course[]) => {
     // Awaits all promises to complete before continuing 
     // --> ensures return is not array of promises :(
     const allData = await Promise.all(courses.map(async (course) => {
-        const id = `${course.dept}-${course.number}`
+        const id = course.id
         const courseData = await getCourseData(id)
 
-        // // Rejects promises after 5 seconds - timeout
+        // // Rejects promises after 5 seconds - timeout (not needed - just that penn wifi is slow)
         // const timeoutPromise = Promise.race([
         //     courseData, 
         //     new Promise((_, reject) => {
@@ -48,9 +48,9 @@ const getAll = async (courses: Course[]) => {
         // console.log(courseData)
         if(courseData) {
             return {...course, 
-                "course_quality": courseData["course_quality"].toFixed(2),
-                "work_required": courseData["work_required"].toFixed(2),
-                "difficulty": courseData["difficulty"].toFixed(2)
+                "course_quality": courseData["course_quality"],
+                "work_required": courseData["work_required"],
+                "difficulty": courseData["difficulty"]
             }
         } else {
             return {...course}
@@ -60,8 +60,15 @@ const getAll = async (courses: Course[]) => {
     return allData
 }
 
+// Gets all courses for the semester
+const getAll = async () => {
+    const response = await axios.get(`${baseUrl}/search/courses/?search=cis`)
+    return response.data
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
     getCourseData,
+    getListData,
     getAll
 }

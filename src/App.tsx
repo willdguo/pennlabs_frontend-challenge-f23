@@ -8,12 +8,14 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 
 
 interface Course {
-  dept: string,
-  number: number,
+  id: string,
   title: string,
   description: string,
   prereqs?: string[] | string,
-  "cross-listed"?: string[]
+  "cross-listed"?: string[],
+  "course_quality"?: number,
+  "difficulty"?: number,
+  "work_required"?: number
 }
 
 function App() {
@@ -22,7 +24,7 @@ function App() {
   const [search, setSearch] = useState("")
   const [cartView, setCartView] = useState(false)
 
-  const [numberFilter, setNumberFilter] = useState([false, false, false]) // FIX THIS
+  const [numberFilter, setNumberFilter] = useState([false, false, false])
 
   const flip_filter = (index: number) => {
     if(index === 0){

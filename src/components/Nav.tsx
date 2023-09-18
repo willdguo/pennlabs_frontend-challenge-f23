@@ -4,8 +4,7 @@ import icon1 from "../icons/cart_icon.png"
 
 interface NavProps {
   cart: Array<{
-    dept: string,
-    number: number,
+    id: string,
     title: string,
     description: string,
     prereqs?: string[] | string,
@@ -20,7 +19,7 @@ const Nav = (props: NavProps) => {
   // Converts cart to an appropriate URL query
   // Returns string of cart course IDs ('[dept]-[number]') joined by ';'
   const cartToQuery = () => {
-    const output = (props.cart.map(course => `${course.dept}-${course.number}`)).join(';')
+    const output = (props.cart.map(course => course.id)).join('+')
     console.log(output)
     return output
   }

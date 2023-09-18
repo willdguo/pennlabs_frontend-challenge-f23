@@ -1,19 +1,29 @@
-# Penn Course Cart - Summary
-Penn Course Cart is an interface where users can explore CIS department courses. It uses data entirely from the Penn Course Plan 2022 Spring semester.
+# Project Summary
+Penn Course Cart is an interface where users can explore all CIS department courses. It uses data from the Penn Course Plan 2022 Spring semester merged with the data from data.json.
 
 ## Features
 
 **Viewport compatibility:** The webpage is compatible with different screen sizes, though the below descriptions are written for a laptop view.  
 
-**Course View:** Upon loading in, all courses under the Spring 2022 "CIS" search *with a nonempty title* are loaded in. Users can view the feed of available CIS courses. By default, this is sorted based on the course number. Each course tile includes the course title, prereqs (if any), cross listings (if any), description, along with student ratings of the course's quality, difficulty, and work required. For the sake of space, each tile has the description capped at 150px in height with the capability to scroll for more info. 
+**Course View:** Upon loading in, all courses under the Spring 2022 "CIS" search *with a nonempty title* are loaded in. Among these courses, the prereqs/cross-listings from data.json are incorporated into the database after loading, along with courses not provided in the Spring 2022 semester that are in data.json.
 
-**Cart View:** Users can see their cart on the sidebar on the left of the screen. On the sidebar, the user will be informed when their cart is empty. When their cart isn't empty, they are capable of re-ordering/deleting courses from their sidebar. 
+Users can view the feed of available CIS courses. By default, this is sorted based on the course number. Each course tile includes the course title, prereqs (if any), cross listings (if any), description, along with student ratings of the course's quality, difficulty, and work required. For the sake of space, each tile has the description capped at 150px in height with the capability to scroll for more info.
 
-**Course Filtering:** The sidebar also gives users the option to search for and filter courses in their view. Courses are split into 3 course levels and can be searched for based on their title, description, or ID.
+**Cart View:** Users can see their cart on the sidebar on the left of the screen. On the sidebar, the user will be informed when their cart is empty. When their cart isn't empty, they are capable of re-ordering and courses from their sidebar by hovering over the appropriate cart item then clicking/dragging the relevant icon. 
 
-**Cart Selection:** Each course tile has a button for users to add/delete the course from their cart. Users can also do this on the sidebar where the cart view is. 
+**Course Filtering:** The sidebar also gives users the option to search for and filter courses in their view. Courses are split into 3 course levels and can be searched for based on their title, description, or ID. Users can also sort courses based on their number, quality, difficulty, and work required. Search/filter/sort parameters can also be used in cart view. 
 
-**Checkout:** Users can access checkout by either redirecting to '/checkout', clicking the cart icon in the top right, or clicking the checkout button on the sidebar available when users have at least 1 item in their cart. During checkout, users can reorder the courses in their cart and Confirm their checkout. 
+There are some courses without much data readily available (e.g. CIS 660, CIS 798). These courses are still technically available but by default are sifted to the bottom of every search query.
+
+**Cart Selection:** Each course tile has a button for users to add/delete the course from their cart. Users can also do this on the sidebar where the cart view is.
+
+**Checkout:** Users can access checkout by either redirecting to '/checkout', clicking the cart icon in the top right, or clicking the checkout button on the sidebar available when users have at least 1 item in their cart. During checkout, users can reorder the courses in their cart. Users with at least 1 course that isn't available in the Spring 2022 semester are prompted with a confirmation alert; otherwise, users can confirm their checkout.
+
+
+
+
+
+
 
 
 # Frontend Challenge Fall '22

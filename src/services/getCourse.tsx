@@ -60,7 +60,8 @@ const getListData = async (courses: Course[]) => {
     return allData
 }
 
-// Gets all courses for the semester
+// Gets all CIS ourses for the semester
+// Returns data from API w/ search query "CIS"
 const getAll = async () => {
     const response = await axios.get(`${baseUrl}/search/courses/?search=cis`)
     return response.data

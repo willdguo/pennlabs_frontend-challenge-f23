@@ -114,14 +114,13 @@
 }
 
 .sidebar .search {
-  height: 24vh;
+  height: 20vh;
   border-bottom: 1px solid #e0e0e0;
   overflow-y: auto;
 }
 
 .search .searchbar {
   padding-bottom: 10px;
-  margin-bottom: 10px;
 }
 
 .search .searchbar input {
@@ -149,7 +148,7 @@
 }
 
 .search .filter {
-  padding: 10px 0px;
+  padding: 10px 0px 0px;
 }
 
 .search .filter h3 {
@@ -171,8 +170,48 @@
   margin-right: 10px;
 }
 
+.sidebar .sort {
+  max-height: 10vh;
+  overflow-y: auto;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 0px;
+}
+
+.sidebar .sort h3 {
+  margin: 0px;
+  margin-bottom: 10px;
+}
+
+.sidebar .sort button {
+  padding: 2px;
+  margin: 2px;
+  font-size: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  background-color: transparent;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  transition: background-color 0.1s ease;
+}
+
+.sidebar .sort button:hover {
+  background-color: #e0e0e0;
+}
+
+.sidebar .sort button:focus {
+  outline: 1px solid #e0e0e0;
+}
+
+.sidebar .sort .selected {
+  background-color: #AFBAF5;
+  border: 1px solid black;
+}
+
+.sidebar .sort .selected:hover {
+  background-color: #9f9af5;
+}
+
 .sidebar-cart-container {
-  height: calc(66vh - 98px);
+  height: calc(56vh - 98px);
 }
 
 .sidebar-cart {
@@ -190,8 +229,8 @@
 .sidebar-cart-content ul {
   padding-left: 0;
   padding-bottom: 10px;
-  height: calc(56vh - 98px);
-  max-height: calc(56vh - 98px);
+  height: calc(46vh - 98px);
+  max-height: calc(46vh - 98px);
   overflow-y: auto;
   border-bottom: 1px solid black;
 }

@@ -42,6 +42,7 @@ interface CartProps {
   numberFilter: Array<boolean>;
   cartView: boolean;
   setCartView: React.Dispatch<React.SetStateAction<boolean>>;
+  sortVal: number;
 }
 
 const Courses = (props: CartProps) => {
@@ -127,6 +128,9 @@ const Courses = (props: CartProps) => {
       cartFilteredCourses = courseList
     }
 
+    // once (potentially) filtered, sort remaining courses based on sortVal
+    cartFilteredCourses = sortCourses(cartFilteredCourses, props.sortVal)
+
     // next, filter by search parameters - title, description, & id
     const searchFilteredCourses = cartFilteredCourses.filter(course => 
       course.title.includes(props.search) 
@@ -145,7 +149,7 @@ const Courses = (props: CartProps) => {
       )
     }
     setFiltered_courses(numFilteredCourses)
-  }, [courseList, props.search, props.numberFilter, props.cartView])
+  }, [courseList, props.search, props.numberFilter, props.cartView, props.sortVal])
 
   // Retrieve course number from course
   // Return: course number : number
@@ -162,9 +166,9 @@ const Courses = (props: CartProps) => {
         const num2 = getNumber(c2)
         return num1 - num2
       } else if(sortVal === 1){
-        const num1 = c1.course_quality || 5
-        const num2 = c2.course_quality || 5
-        return num1 - num2
+        const num1 = c1.course_quality || 0
+        const num2 = c2.course_quality || 0
+        return num2 - num1
       } else if (sortVal === 2){
          const num1 = c1.difficulty || 5
          const num2 = c2.difficulty || 5

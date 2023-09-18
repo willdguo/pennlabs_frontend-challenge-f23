@@ -24,9 +24,11 @@ function App() {
   const [cart, setCart] = useState<Course[]>([])
   const [search, setSearch] = useState("")
   const [cartView, setCartView] = useState(false)
+  const [sortVal, setSortVal] = useState(0)
 
   const [numberFilter, setNumberFilter] = useState([false, false, false])
 
+  // Flips filter for index'th filter (hardcoded for simplicity - can be made cscalable for >3 inputs)
   const flip_filter = (index: number) => {
     if(index === 0){
       setNumberFilter([!numberFilter[0], numberFilter[1], numberFilter[2]])
@@ -34,6 +36,16 @@ function App() {
       setNumberFilter([numberFilter[0], !numberFilter[1], numberFilter[2]])
     } else {
       setNumberFilter([numberFilter[0], numberFilter[1], !numberFilter[2]])
+    }
+  }
+
+  // Changes sortVal based on input. If already selected (e.g. if sortVal = val), then will unselect
+  // Parameters: val (0 = number, 1 = quality, 2 = difficulty, 3 = work) --> changes sortVal accordingly
+  const handleSortVal = (val: number) => {
+    if(val === sortVal){
+      setSortVal(0)
+    } else {
+      setSortVal(val)
     }
   }
 
@@ -81,6 +93,14 @@ function App() {
             </div>
           </div>
 
+          <div className = "sort">
+            <h3> Sort By </h3>
+            <button className = {sortVal === 0 ? "selected" : ""} onClick = {() => handleSortVal(0)}> Course Number </button>
+            <button className = {sortVal === 1 ? "selected" : ""} onClick = {() => handleSortVal(1)}> Course Quality </button>
+            <button className = {sortVal === 2 ? "selected" : ""} onClick = {() => handleSortVal(2)}> Difficulty </button>
+            <button className = {sortVal === 3 ? "selected" : ""} onClick = {() => handleSortVal(3)}> Work Required </button>
+          </div>
+
           <div className = "sidebar-cart-container">
             <Cart cart = {cart} setCart = {setCart}/>
           </div>
@@ -89,7 +109,7 @@ function App() {
 
         <div className = "course-list-container">
           <Courses cart = {cart} setCart = {setCart} search = {search} 
-            numberFilter = {numberFilter} cartView = {cartView} setCartView = {setCartView}/>
+            numberFilter = {numberFilter} cartView = {cartView} setCartView = {setCartView} sortVal = {sortVal}/>
         </div>
     </div>
   )
